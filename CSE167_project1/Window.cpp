@@ -12,6 +12,8 @@ PointCloud * Window::cubePoints;
 PointCloud * Window::bunnyPoints;
 PointCloud * Window::sandalPoints;
 PointCloud * Window::bearPoints;
+PointCloud * Window::lightSphere;
+
 Object* currObj;
 
 // scale factor in scaling triangles
@@ -56,21 +58,57 @@ bool Window::initializeObjects()
 	// Create a cube of size 5.
 	cube = new Cube(5.0f);
     
+    // Initialize the point light
+    glm::vec3 pos = glm::vec3(10,10,0);
+    glm::vec3 color = glm::vec3(0.7, 0.7, 0.2);
+    glm::vec3 atten = glm::vec3(10);
+    PointLight * pointLight = new PointLight(pos, color, atten);
+    
+    // Set the material for emerald and bunny
     glm::vec3 ambient = glm::vec3(0.0215, 0.1745, 0.0215);
-    glm::vec3 diffuse = glm::vec3(0.07568, 0.61424, 0.07568);
+    glm::vec3 diffuse = glm::vec3(0.50754, 0.50754, 0.50754);
     glm::vec3 specular = glm::vec3(0.633, 0.727811, 0.633);
-    float shininess = 0.6;
-    //Materials * materials = new Materials(ambient,diffuse,specular,shininess);
+    float shininess = 1.5;
+    Materials * emerald = new Materials(ambient,diffuse,specular,shininess);
     
 	// Create a point cloud consisting of cube vertices.
-	cubePoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/proj1/CSE167_project1/CSE167_project1/bunny.obj", 1);
+	cubePoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/project/CSE167_project1/CSE167_project1/bunny.obj", 1, emerald, pointLight);
 
 	// Set cube to be the first to display
 	currObj = cube;
     
-    bunnyPoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/proj1/CSE167_project1/CSE167_project1/bunny.obj", 1);
-    sandalPoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/proj1/CSE167_project1/CSE167_project1/SandalF20.obj", 1);
-    bearPoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/proj1/CSE167_project1/CSE167_project1/bear.obj", 1);
+    bunnyPoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/project/CSE167_project1/CSE167_project1/bunny.obj",1,emerald, pointLight);
+    
+    // Set the material for sandal
+    ambient = glm::vec3(0.329412, 0.223529, 0.027451);
+    diffuse = glm::vec3(0.780392, 0.568627, 0.113725);
+    specular = glm::vec3(0);
+    shininess = 0.21794872;
+    Materials * brass = new Materials(ambient,diffuse,specular,shininess);
+    sandalPoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/project/CSE167_project1/CSE167_project1/SandalF20.obj",1,brass, pointLight);
+    
+    // Set the material for bear
+    ambient = glm::vec3(0.24725, 0.1995, 0.0745);
+    diffuse = glm::vec3(0);
+    specular = glm::vec3(0.992157, 0.941176, 0.807843);
+    shininess = 0.8;
+    Materials * gold = new Materials(ambient,diffuse,specular,shininess);
+    bearPoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/project/CSE167_project1/CSE167_project1/bear.obj",1, gold, pointLight);
+    
+    // Initialize light sphere
+    glm::vec3 translation = pointLight->getPos();
+    glm::vec3 lightColor = pointLight->getColor();
+    
+    ambient = lightColor;
+    diffuse = glm::vec3(0);
+    specular = glm::vec3(0);
+    Materials * lightMaterial = new Materials(ambient,diffuse,specular,shininess);
+    lightSphere = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/project/CSE167_project1/CSE167_project1/sphere.obj",1, lightMaterial, pointLight);
+    
+    // Adjust the light sphere
+    lightSphere->scale(0.5);
+    lightSphere->translate(translation);
+    lightSphere->toggleModelSwitch();
     
     // Initialize scale factor
     scaleFactor = 1.0;
@@ -175,6 +213,9 @@ void Window::displayCallback(GLFWwindow* window)
 
 	// Render the objects
 	currObj->draw(view, projection, shaderProgram);
+    
+    // Render light Sphere with the right scale and translation
+    lightSphere->draw(view, projection, shaderProgram);
 
 	// Gets events, including input such as keyboard and mouse or window resizing
 	glfwPollEvents();
@@ -204,9 +245,9 @@ void Window::cursor_position_callback(GLFWwindow* window, double xpos, double yp
     glm::vec3 startPoint = trackBallMapping(startPosX, startPosY);
     glm::vec3 nextPoint = trackBallMapping(xpos, ypos);
     
-    cout << "start point is (" << startPosX << ", " << startPosY  << ") " << endl;
-    cout << "next point is (" << xpos << ", " << ypos << ") " << endl;
-    cout << endl;
+    //cout << "start point is (" << startPosX << ", " << startPosY  << ") " << endl;
+    //cout << "next point is (" << xpos << ", " << ypos << ") " << endl;
+    //cout << endl;
 
     glm::vec3 direction = nextPoint - startPoint;
     float velocity = glm::length(direction);
@@ -219,6 +260,7 @@ void Window::cursor_position_callback(GLFWwindow* window, double xpos, double yp
     glm::vec3 rotAxis = glm::cross(startPoint, nextPoint);
     float rotAngle = velocity * 1;
     ((PointCloud*)currObj)->ballRotate(rotAxis, rotAngle);
+    //((PointCloud*)lightSphere)->ballRotate(rotAxis, rotAngle);
     
     startPosX = xpos;
     startPosY = ypos;
@@ -290,6 +332,7 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
             }
                 
             case GLFW_KEY_UP :{
+                //lightSphere->translate(1.1*translation);
                 scaleFactor = scaleFactor + 0.1;
                 ((PointCloud*)currObj)->scale(scaleFactor);
                 break;
@@ -301,6 +344,10 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
                 break;
             }
                 
+            case GLFW_KEY_N: {
+                ((PointCloud*)currObj)->toggleModelSwitch();
+                break;
+            }
                 
             default:{
                 break;

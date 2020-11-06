@@ -22,7 +22,8 @@ public:
 	static PointCloud * cubePoints;
     static PointCloud * bearPoints;
     static PointCloud * sandalPoints;
-
+    static PointCloud * lightSphere;
+    
 	// Camera Matrices
 	static glm::mat4 projection;
 	static glm::mat4 view;
@@ -59,6 +60,8 @@ public:
     static bool mousePressed;
     static double startPosX;
     static double startPosY;
+    
+    //static glm::vec3 translation;
 };
 
 #endif

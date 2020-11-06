@@ -18,6 +18,7 @@
 		0CFF87A2254CB823001FD09D /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CFF87A1254CB823001FD09D /* libglfw.3.3.dylib */; };
 		0CFF87A3254CB823001FD09D /* libglfw.3.3.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0CFF87A1254CB823001FD09D /* libglfw.3.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		0CFF87A8255392C4001FD09D /* Materials.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF87A6255392C4001FD09D /* Materials.cpp */; };
+		0CFF87AB255513A5001FD09D /* PointLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CFF87A9255513A2001FD09D /* PointLight.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -91,6 +92,8 @@
 		0CFF87A1254CB823001FD09D /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../../../../usr/local/Cellar/glfw/3.3.2/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
 		0CFF87A525538BEA001FD09D /* Materials.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Materials.h; sourceTree = "<group>"; };
 		0CFF87A6255392C4001FD09D /* Materials.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Materials.cpp; sourceTree = "<group>"; };
+		0CFF87A9255513A2001FD09D /* PointLight.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PointLight.cpp; sourceTree = "<group>"; };
+		0CFF87AA255513A2001FD09D /* PointLight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PointLight.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +146,8 @@
 				0C215D49252B859200A7F5B9 /* main.cpp */,
 				0CFF87A525538BEA001FD09D /* Materials.h */,
 				0CFF87A6255392C4001FD09D /* Materials.cpp */,
+				0CFF87A9255513A2001FD09D /* PointLight.cpp */,
+				0CFF87AA255513A2001FD09D /* PointLight.h */,
 			);
 			path = CSE167_project1;
 			sourceTree = "<group>";
@@ -259,6 +264,7 @@
 				0C215D5F252B878600A7F5B9 /* Cube.cpp in Sources */,
 				0CFF87A8255392C4001FD09D /* Materials.cpp in Sources */,
 				0C215D5E252B878600A7F5B9 /* PointCloud.cpp in Sources */,
+				0CFF87AB255513A5001FD09D /* PointLight.cpp in Sources */,
 				0C215D4A252B859200A7F5B9 /* main.cpp in Sources */,
 				0C215D60252B878600A7F5B9 /* Window.cpp in Sources */,
 			);

@@ -5,27 +5,21 @@
 #include <math.h>
 
 
-PointCloud::PointCloud(std::string objFilename, GLfloat pointSize) : pointSize(pointSize)
+PointCloud::PointCloud(std::string objFilename, GLfloat pointSize, Materials * in_materials, PointLight * in_pointLight) : pointSize(pointSize)
 {
 	/* 
 	 * TODO: Section 2: Currently, all the points are hard coded below. 
 	 * Modify this to read points from an obj file.
 	 */
-	
-    /*
-	points = {
-		glm::vec3(-2.5, 2.5, 2.5),
-		glm::vec3(-2.5, -2.5, 2.5),
-		glm::vec3(2.5, -2.5, 2.5),
-		glm::vec3(2.5, 2.5, 2.5),
-		glm::vec3(-2.5, 2.5, -2.5),
-		glm::vec3(-2.5, -2.5, -2.5),
-		glm::vec3(2.5, -2.5, -2.5),
-		glm::vec3(2.5, 2.5, -2.5)
-	};
-    */
+
+    // Initialize materials
+    materials = in_materials;
     
-    //materials = in_materials;
+    // Initialize pointlight
+    pointLight = in_pointLight;
+    
+    // Intialize model switch to be 1 (1: normal, 0: phong)
+    modelSwitch = 1;
     
     ifstream objFile(objFilename); // The obj file we are reading.
     //std::vector<glm::vec3> points;
@@ -80,9 +74,7 @@ PointCloud::PointCloud(std::string objFilename, GLfloat pointSize) : pointSize(p
             else if (label == "vn"){
                 glm::vec3 rgb;
                 ss >>rgb.x >> rgb.y >> rgb.z;
-                
-                //rgb = glm::normalize(rgb);
-                //rgb = (rgb*0.5f) + 0.5f;
+        
                 rgbs.push_back(rgb);
             }
         }
@@ -197,11 +189,16 @@ void PointCloud::draw(const glm::mat4& view, const glm::mat4& projection, GLuint
 	glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, glm::value_ptr(model));
 	glUniform3fv(glGetUniformLocation(shader, "color"), 1, glm::value_ptr(color));
     
-    //glUniform3fv(glGetUniformLocation(shader, "ambient"), 1, glm::value_ptr(materials->ambient));
-    //glUniform3fv(glGetUniformLocation(shader, "diffuse"), 1, glm::value_ptr(materials->diffuse));
-    //glUniform3fv(glGetUniformLocation(shader, "specular"), 1, glm::value_ptr(materials->specular));
-    //glUniform3fv(glGetUniformLocation(shader, "shininess"), 1,glm::value_ptr(materials->shininess));
-
+    // Send materials information to shader
+    materials->sendMatToShader(shader);
+    
+    // Send point light info to shader
+    pointLight->sendLightToShader(shader);
+    
+    // Send model and light switch to shader
+    glUniform1i(glGetUniformLocation(shader, "modelSwitch"), modelSwitch);
+    //glUniform1i(glGetUniformLocation(shader, "lightSwitch"), lightSwitch);
+    
 	// Bind the VAO
 	glBindVertexArray(VAO);
 
@@ -247,11 +244,20 @@ void PointCloud::spin(float deg)
 }
 
 void PointCloud::scale(double scale){
-    if (scale >= 0){
+    if (scale > 0){
         model = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
     }
 }
 
+void PointCloud::translate(glm::vec3 translation){
+    model = glm::translate(model, translation);
+
+}
+
 void PointCloud::ballRotate(glm::vec3 rotAxis, float rotAngle){
     model = glm::rotate(glm::mat4(1.0f), rotAngle, rotAxis) * model;
+}
+
+void PointCloud::toggleModelSwitch(){
+    modelSwitch = 1 - modelSwitch;
 }
