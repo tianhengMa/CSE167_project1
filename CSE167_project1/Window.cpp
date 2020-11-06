@@ -9,7 +9,18 @@ const char* Window::windowTitle = "GLFW Starter Project";
 // Objects to Render
 Cube * Window::cube;
 PointCloud * Window::cubePoints;
+PointCloud * Window::bunnyPoints;
+PointCloud * Window::sandalPoints;
+PointCloud * Window::bearPoints;
 Object* currObj;
+
+// scale factor in scaling triangles
+double Window::scaleFactor;
+
+// Cusor Position
+bool Window::mousePressed;
+double Window::startPosX;
+double Window::startPosY;
 
 // Camera Matrices 
 // Projection matrix:
@@ -44,12 +55,25 @@ bool Window::initializeObjects()
 {
 	// Create a cube of size 5.
 	cube = new Cube(5.0f);
-
+    
+    glm::vec3 ambient = glm::vec3(0.0215, 0.1745, 0.0215);
+    glm::vec3 diffuse = glm::vec3(0.07568, 0.61424, 0.07568);
+    glm::vec3 specular = glm::vec3(0.633, 0.727811, 0.633);
+    float shininess = 0.6;
+    //Materials * materials = new Materials(ambient,diffuse,specular,shininess);
+    
 	// Create a point cloud consisting of cube vertices.
-	cubePoints = new PointCloud("foo", 100);
+	cubePoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/proj1/CSE167_project1/CSE167_project1/bunny.obj", 1);
 
 	// Set cube to be the first to display
 	currObj = cube;
+    
+    bunnyPoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/proj1/CSE167_project1/CSE167_project1/bunny.obj", 1);
+    sandalPoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/proj1/CSE167_project1/CSE167_project1/SandalF20.obj", 1);
+    bearPoints = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/proj1/CSE167_project1/CSE167_project1/bear.obj", 1);
+    
+    // Initialize scale factor
+    scaleFactor = 1.0;
 
 	return true;
 }
@@ -159,6 +183,65 @@ void Window::displayCallback(GLFWwindow* window)
 	glfwSwapBuffers(window);
 }
 
+void Window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+        mousePressed = true;
+        glfwGetCursorPos(window, &startPosX, &startPosY);
+    }
+    
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE){
+        mousePressed = false;
+    }
+        
+}
+void Window::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (!mousePressed){
+        return;
+    }
+    
+    glm::vec3 startPoint = trackBallMapping(startPosX, startPosY);
+    glm::vec3 nextPoint = trackBallMapping(xpos, ypos);
+    
+    cout << "start point is (" << startPosX << ", " << startPosY  << ") " << endl;
+    cout << "next point is (" << xpos << ", " << ypos << ") " << endl;
+    cout << endl;
+
+    glm::vec3 direction = nextPoint - startPoint;
+    float velocity = glm::length(direction);
+    
+    // if cursor movement is very little, do nothing
+    if (velocity < 0.001){
+        return;
+    }
+    
+    glm::vec3 rotAxis = glm::cross(startPoint, nextPoint);
+    float rotAngle = velocity * 1;
+    ((PointCloud*)currObj)->ballRotate(rotAxis, rotAngle);
+    
+    startPosX = xpos;
+    startPosY = ypos;
+    
+}
+
+
+glm::vec3 Window::trackBallMapping(double pointX, double pointY){
+    glm::vec3 vec;
+    float d;
+    
+    vec.x = (2.0*pointX - width) / width;
+    vec.y = (height - 2.0*pointY) / height;
+    vec.z = 0.0;
+    
+    d = glm::length(vec);
+    d = (d<1.0) ? d:1.0;
+    vec.z = sqrtf(1.001 - d*d);
+    vec = glm::normalize(vec);
+    
+    return vec;
+}
+
 void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	/*
@@ -168,23 +251,60 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 	// Check for a key press.
 	if (action == GLFW_PRESS)
 	{
-		switch (key)
-		{
-		case GLFW_KEY_ESCAPE:
-			// Close the window. This causes the program to also terminate.
-			glfwSetWindowShouldClose(window, GL_TRUE);				
-			break;
+		switch (key){
+            case GLFW_KEY_ESCAPE:
+                // Close the window. This causes the program to also terminate.
+                glfwSetWindowShouldClose(window, GL_TRUE);
+                break;
 
-		// switch between the cube and the cube pointCloud
-		case GLFW_KEY_1:
-			currObj = cube;
-			break;
-		case GLFW_KEY_2:
-			currObj = cubePoints;
-			break;
-
-		default:
-			break;
+            // switch between the cube and the cube pointCloud
+            case GLFW_KEY_1:
+                currObj = cube;
+                break;
+            case GLFW_KEY_2:
+                currObj = cubePoints;
+                break;
+                    
+            // switch between bunny points, sandal points, and bear points
+            case GLFW_KEY_F1:{
+                currObj = bunnyPoints;
+                break;
+            }
+            case GLFW_KEY_F2:{
+                currObj = sandalPoints;
+                break;
+            }
+            case GLFW_KEY_F3:{
+                currObj = bearPoints;
+                break;
+            }
+            // adjust point size
+            case GLFW_KEY_S:{
+                ((PointCloud*)currObj)->decreasePointSize();
+                break;
+            }
+                
+            case GLFW_KEY_L:{
+                ((PointCloud*)currObj)->increasePointSize();
+                break;
+            }
+                
+            case GLFW_KEY_UP :{
+                scaleFactor = scaleFactor + 0.1;
+                ((PointCloud*)currObj)->scale(scaleFactor);
+                break;
+            }
+                
+            case GLFW_KEY_DOWN :{
+                scaleFactor = scaleFactor - 0.1;
+                ((PointCloud*)currObj)->scale(scaleFactor);
+                break;
+            }
+                
+                
+            default:{
+                break;
+            }
 		}
 	}
 }

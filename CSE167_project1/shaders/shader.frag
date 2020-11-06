@@ -4,8 +4,15 @@
 // Inputs to the fragment shader are the outputs of the same name from the vertex shader.
 // Note that you do not have access to the vertex shader's default output, gl_Position.
 in float sampleExtraOutput;
+in vec3 posOutput;
+in vec3 normalOutput;
 
 uniform vec3 color;
+
+uniform vec3 ambient;
+uniform vec3 diffuse;
+uniform vec3 specular;
+uniform float shininess;
 
 // You can output many things. The first vec4 type output determines the color of the fragment
 out vec4 fragColor;
@@ -13,5 +20,6 @@ out vec4 fragColor;
 void main()
 {
     // Use the color passed in. An alpha of 1.0f means it is not transparent.
-    fragColor = vec4(color, sampleExtraOutput);
+    fragColor = vec4(normalOutput, sampleExtraOutput);
+    vec3 temp = posOutput;
 }

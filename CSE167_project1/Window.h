@@ -18,7 +18,10 @@ public:
 
 	// Objects to Render
 	static Cube* cube;
+    static PointCloud* bunnyPoints;
 	static PointCloud * cubePoints;
+    static PointCloud * bearPoints;
+    static PointCloud * sandalPoints;
 
 	// Camera Matrices
 	static glm::mat4 projection;
@@ -43,6 +46,19 @@ public:
 
 	// Callbacks
 	static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+    static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+
+    // Scale factor
+    static double scaleFactor;
+    
+    // Track Ball
+    static glm::vec3 trackBallMapping(double pointX, double pointY);
+    
+    // Cursor Position when mouse is pressed
+    static bool mousePressed;
+    static double startPosX;
+    static double startPosY;
 };
 
 #endif
