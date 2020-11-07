@@ -30,3 +30,7 @@ glm::vec3 PointLight::getPos(){
 glm::vec3 PointLight::getColor(){
     return color;
 }
+
+void PointLight::setPos(glm::vec3 new_pos){
+    pos = new_pos;
+}

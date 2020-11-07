@@ -19,14 +19,15 @@ private:
     // atten.y = linear factor
     // atten.z = quadratic factor
     
-    //glm::vec3 pos, color, atten;
+    glm::vec3 pos, color, atten;
     
 public:
-    glm::vec3 pos, color, atten;
+    //glm::vec3 pos, color, atten;
     PointLight(glm::vec3 in_pos, glm::vec3 in_color, glm::vec3 atten);
     void sendLightToShader(const int shaderID);
     glm::vec3 getPos();
     glm::vec3 getColor();
+    void setPos(glm::vec3 new_pos);
 };
 
 

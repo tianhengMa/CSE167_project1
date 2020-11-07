@@ -246,6 +246,7 @@ void PointCloud::spin(float deg)
 void PointCloud::scale(double scale){
     if (scale > 0){
         model = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
+        //model = glm::scale(model, glm::vec3(scale));
     }
 }
 
@@ -256,6 +257,7 @@ void PointCloud::translate(glm::vec3 translation){
 
 void PointCloud::ballRotate(glm::vec3 rotAxis, float rotAngle){
     model = glm::rotate(glm::mat4(1.0f), rotAngle, rotAxis) * model;
+    //model = glm::rotate(model, rotAngle, rotAxis);
 }
 
 void PointCloud::toggleModelSwitch(){

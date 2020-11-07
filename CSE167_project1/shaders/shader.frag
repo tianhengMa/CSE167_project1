@@ -55,13 +55,10 @@ void main()
     vec3 result = ambient + diffuse + specular;
     
     if (modelSwitch == 1){
+        // Use the color passed in. An alpha of 1.0f means it is not transparent.
         fragColor = vec4(normalOutput, 1.0);
     } else {
         fragColor = vec4(result, 1.0);
         
     }
-    
-    // Use the color passed in. An alpha of 1.0f means it is not transparent.
-    //fragColor = vec4(normalOutput, sampleExtraOutput);
-    vec3 temp = posOutput;
 }

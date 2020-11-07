@@ -28,6 +28,7 @@ public:
 	static glm::mat4 projection;
 	static glm::mat4 view;
 	static glm::vec3 eyePos, lookAtPoint, upVector;
+    static glm::vec3 lightPos;
 
 	// Shader Program ID
 	static GLuint shaderProgram;
@@ -52,6 +53,7 @@ public:
 
     // Scale factor
     static double scaleFactor;
+    static float lightScale;
     
     // Track Ball
     static glm::vec3 trackBallMapping(double pointX, double pointY);
@@ -61,7 +63,9 @@ public:
     static double startPosX;
     static double startPosY;
     
-    //static glm::vec3 translation;
+    // light position modes
+    static int lightPosMode;
+    static PointLight* pointLight;
 };
 
 #endif
