@@ -245,7 +245,7 @@ void PointCloud::spin(float deg)
 
 void PointCloud::scale(double scale){
     if (scale > 0){
-        model = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
+        model = glm::scale(glm::mat4(1.0f), glm::vec3(scale))*model;
         //model = glm::scale(model, glm::vec3(scale));
     }
 }

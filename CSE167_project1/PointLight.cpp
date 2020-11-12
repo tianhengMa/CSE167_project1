@@ -18,7 +18,7 @@ PointLight::PointLight(glm::vec3 in_pos, glm::vec3 in_color, glm::vec3 in_atten)
 }
 
 void PointLight::sendLightToShader(const int shaderID){
-    glUniform3fv(glGetUniformLocation(shaderID, "in_lightColor"), 1, glm::value_ptr(color));
+    glUniform3fv(glGetUniformLocation(shaderID, "lightColor"), 1, glm::value_ptr(color));
     glUniform3fv(glGetUniformLocation(shaderID, "lightPos"), 1, glm::value_ptr(pos));
     glUniform3fv(glGetUniformLocation(shaderID, "lightAtten"), 1, glm::value_ptr(atten));
 }

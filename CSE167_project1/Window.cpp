@@ -27,7 +27,6 @@ float Window::lightScale;
 
 // Light position mode, initialize to be 1
 int Window::lightPosMode = 1;
-glm::vec3 Window::lightPos;
 
 // static point light
 PointLight * Window::pointLight;
@@ -72,9 +71,9 @@ bool Window::initializeObjects()
 	cube = new Cube(5.0f);
     
     // Initialize the point light
-    lightPos = glm::vec3(10,10,0);
+    glm::vec3 lightPos = glm::vec3(4,4,0);
     glm::vec3 color = glm::vec3(0.7, 0.7, 0.2);
-    glm::vec3 atten = glm::vec3(10);
+    glm::vec3 atten = glm::vec3(0.1);
     pointLight = new PointLight(lightPos, color, atten);
     
     // Set the material for emerald and bunny
@@ -119,14 +118,14 @@ bool Window::initializeObjects()
     lightSphere = new PointCloud("/Users/tma2017/Senior/Q1/CSE167/project/CSE167_project1/CSE167_project1/sphere.obj",1, lightMaterial, pointLight);
     
     // Adjust the light sphere
-    lightSphere->scale(0.5);
+    lightSphere->scale(0.1);
     lightSphere->translate(translation);
     lightSphere->toggleModelSwitch();
     
     // Initialize scale factor
     scaleFactor = 1.0;
     lightScale = 1.0;
-    ((PointCloud*)currObj)->scale(scaleFactor);
+    ((PointCloud*)currObj)->scale(1.0);
     
 	return true;
 }
@@ -347,19 +346,19 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
             case GLFW_KEY_F1:{
                 currObj = bunnyPoints;
                 scaleFactor = 1;
-                ((PointCloud*)currObj)->scale(scaleFactor);
+                ((PointCloud*)currObj)->scale(1.0);
                 break;
             }
             case GLFW_KEY_F2:{
                 currObj = sandalPoints;
                 scaleFactor = 1;
-                ((PointCloud*)currObj)->scale(scaleFactor);
+                ((PointCloud*)currObj)->scale(1.0);
                 break;
             }
             case GLFW_KEY_F3:{
                 currObj = bearPoints;
                 scaleFactor = 1;
-                ((PointCloud*)currObj)->scale(scaleFactor);
+                ((PointCloud*)currObj)->scale(1.0);
                 break;
             }
             // adjust point size
@@ -375,20 +374,22 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
                 
             case GLFW_KEY_UP :{
                 if (lightPosMode == 1){
-                    scaleFactor = scaleFactor + 0.1;
-                    ((PointCloud*)currObj)->scale(scaleFactor);
-                } else{
-                    //cout << "lightScale: " << lightScale << endl;
-                   
-                    //cout << "before translation: " << glm::to_string(lightPos) << endl;
-                    //glm::vec3 new_pos = 1.05f * lightPos;
-                    //lightScale = lightScale + 0.05f;
+                    //scaleFactor = scaleFactor + 0.1;
+                    ((PointCloud*)currObj)->scale(1.1);
+                } else if (lightPosMode == 2){
                     glm::vec3 curr_lightPos = pointLight->getPos();
+                    // Move light Sphere to 1.05 times of current position
                     lightSphere->translate(-1.0f*curr_lightPos);
                     lightSphere->translate(1.05f* curr_lightPos);
-                    //cout << "after translation: " << glm::to_string(lightScale*lightPos) << endl;
-                    //cout <<endl;
-                    
+                    // Move light to 1.05 times of current position
+                    pointLight->setPos(1.05f* curr_lightPos);
+                } else {
+                    ((PointCloud*)currObj)->scale(1.1);
+                    glm::vec3 curr_lightPos = pointLight->getPos();
+                    // Move light Sphere to 1.05 times of current position
+                    lightSphere->translate(-1.0f*curr_lightPos);
+                    lightSphere->translate(1.05f* curr_lightPos);
+                    // Move light to 1.05 times of current position
                     pointLight->setPos(1.05f* curr_lightPos);
                 }
                 
@@ -398,20 +399,26 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
             case GLFW_KEY_DOWN :{
                 if (lightPosMode == 1){
                     if (scaleFactor > 0){
-                        scaleFactor = scaleFactor - 0.1;
-                        ((PointCloud*)currObj)->scale(scaleFactor);
+                        //scaleFactor = scaleFactor - 0.1;
+                        ((PointCloud*)currObj)->scale(0.9);
                     }
-                } else {
+                } else if (lightPosMode == 2){
                     if (lightScale > 0){
-                        //cout << "lightScale: " << lightScale << endl;
-                        //cout << "before translation: " << glm::to_string(lightScale*lightPos) << endl;
-                        //lightScale = lightScale + 0.05f;
                         glm::vec3 curr_lightPos = pointLight->getPos();
+                        // Move light Sphere to 0.95 times of current position
                         lightSphere->translate(-1.0f*curr_lightPos);
                         lightSphere->translate(0.95f* curr_lightPos);
-                        //cout << "after translation: " << glm::to_string(lightScale*lightPos) << endl;
-                        //cout <<endl;
-                        
+                        // Move light to 0.95 times of current position
+                        pointLight->setPos(0.95f* curr_lightPos);
+                    }
+                } else{
+                    if (lightPosMode > 0 && scaleFactor > 0){
+                        ((PointCloud*)currObj)->scale(0.9);
+                        glm::vec3 curr_lightPos = pointLight->getPos();
+                        // Move light Sphere to 0.95 times of current position
+                        lightSphere->translate(-1.0f*curr_lightPos);
+                        lightSphere->translate(0.95f* curr_lightPos);
+                        // Move light to 0.95 times of current position
                         pointLight->setPos(0.95f* curr_lightPos);
                     }
                 }

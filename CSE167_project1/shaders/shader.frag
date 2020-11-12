@@ -10,7 +10,7 @@ in vec3 normalOutput;
 uniform vec3 color;
 
 // Point Light fields
-uniform vec3 in_lightColor;
+uniform vec3 lightColor;
 uniform vec3 lightPos;
 uniform vec3 lightAtten;
 
@@ -18,7 +18,6 @@ uniform vec3 viewPos;
 
 // switch between rendering models
 uniform int modelSwitch;
-//uniform int lightSwitch;
 
 // Materials
 uniform vec3 in_ambient;
@@ -31,26 +30,25 @@ out vec4 fragColor;
 
 void main()
 {
-    float dist = distance(lightPos, posOutput); 
-    vec3 lightColor = lightAtten.y * in_lightColor / dist;
+    float dist = abs(distance(lightPos, posOutput) * lightAtten.y);
+    vec3 atten_lightColor = lightColor / dist;
     
-    //vec3 lightPos = vec3(1);
     vec3 viewPos = vec3(0,0,20);
     
     // ambient
-    vec3 ambient = lightColor * in_ambient;
+    vec3 ambient = atten_lightColor * in_ambient;
       
     // diffuse
     vec3 norm = normalize(normalOutput);
     vec3 lightDir = normalize(lightPos - posOutput);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = lightColor * (diff * in_diffuse);
+    vec3 diffuse = atten_lightColor * (diff * in_diffuse);
     
     // specular
     vec3 viewDir = normalize(viewPos - posOutput);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), in_shininess);
-    vec3 specular = lightColor * (spec * in_specular);
+    vec3 specular = atten_lightColor * (spec * in_specular);
         
     vec3 result = ambient + diffuse + specular;
     
@@ -59,6 +57,5 @@ void main()
         fragColor = vec4(normalOutput, 1.0);
     } else {
         fragColor = vec4(result, 1.0);
-        
     }
 }
